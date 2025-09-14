@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KMHarchive - 검색</title>
+  <link rel="icon" href="favicon.ico">
+  <style>
+    @font-face {
+      font-family: 'Pretendard-Regular';
+      src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    body {
+      font-family: 'Pretendard-Regular', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9ff;
+      color: #333;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    /* 헤더 (프로필 영역) */
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top:40px;
+    }
+
+    .profile-pic {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      margin-right: 15px;
+    }
+
+    .profile-text .nickname {
+      font-weight: bold;
+      font-size: 17px;
+      align-items: flex-start;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile-text .username {
+      color: #333;
+      font-size: 13px;
+      margin-top: 2px;
+      align-items: flex-start;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile-text .status {
+      font-size: 13px;
+      color: gray;
+      margin-top: 2px;
+      align-items: flex-start;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 중앙 소개 */
+    .centered-info {
+      text-align: center;
+      margin-top: 25px;
+      padding: 0 20px;
+    }
+    .centered-info .title {
+      font-weight: normal;
+      font-size: 14px;
+      margin-bottom: 4px;
+      color: #555;
+    }
+    .centered-info .subtitle {
+      font-size: 14px;
+      color: #555;
+    }
+    .centered-info .period {
+      font-size: 14px;
+      margin-top: 3px;
+      color: #777;
+    }
+
+    /* info-box (검색 안내 카드) */
+    .info-box {
+      background-color: #ffffff;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 30px auto 20px auto;
+      width: 90%;
+      max-width: 320px;
+      line-height: 1.6;
+      text-align: left;
+      color: #555;
+    }
+
+    /* 검색 박스 */
+    .search-box {
+      margin: 15px 0;
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+    }
+    .search-box input:focus {
+      border-color: #7746ff;
+    }
+    .search-box button {
+      padding: 10px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 20px;
+      background-color: #7746ff;
+      color: white;
+      cursor: pointer;
+    }
+    .search-box button:hover {
+      background-color: #5e36d4;
+    }
+
+    /* 검색 결과 */
+    .result {
+      margin-top: 20px;
+      text-align: left;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .date-title {
+      font-weight: bold;
+      font-size: 15px;
+      margin-top: 15px;
+      color: #333;
+    }
+.message {
+  display: block;
+  background: #eee8fe;
+  padding: 8px 12px;
+  border-radius: 12px;
+  margin: 5px 0;
+  white-space: pre-wrap;
+  color: #333;           /* 기본 글씨색 */
+  text-decoration: none; /* 밑줄 제거 */
+}
+.message:hover {
+  background: #d9d3ff;   /* 호버 시 강조 */
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- 프로필 영역 (index와 동일) -->
+  <div class="header-container">
+    <img src="/profile/221123.JPG" class="profile-pic" alt="프사">
+    <div class="profile-text">
+      <div class="nickname">미니강쥐🐶❤️</div>
+      <div class="username">@min_h.ee</div>
+      <div class="status">러비티가 너무 보고싶다아아아!!!!</div>
+    </div>
+  </div>
+
+  <!-- 검색 안내 + 검색창 -->
+  <div class="info-box">
+    📌 검색 안내<br><br>
+    - 날짜 여섯 자리(예: 210416)를 입력하면 해당 페이지로 바로 이동합니다.<br>
+    - 텍스트 검색은 입력한 문구(띄어쓰기 포함)가 정확히 들어간 메시지만 찾습니다.<br>
+    - 결과가 없을 경우 "검색 결과가 없습니다" 라고 표시됩니다.<br><br>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="날짜(210416) 또는 텍스트 입력">
+      <button onclick="doSearch()">검색</button>
+    </div>
+  </div>
+
+  <!-- 검색 결과 -->
+  <div id="results" class="result"></div>
+
+  <script>
+  async function doSearch() {
+    let input = document.getElementById("searchInput").value.trim();
+    let resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = "";
+
+    if (/^\d{6}$/.test(input)) {
+      window.location.href = input + ".html";
+      return;
+    }
+
+    if (input === "") {
+      resultsDiv.innerHTML = "<p>검색어를 입력하세요.</p>";
+      return;
+    }
+
+    try {
+      let response = await fetch("search_data.json");
+      let data = await response.json();
+
+      let matches = data.filter(item => item.text.includes(input));
+
+      if (matches.length === 0) {
+        resultsDiv.innerHTML = "<p>검색 결과가 없습니다.</p>";
+        return;
+      }
+
+      let grouped = {};
+      matches.forEach(item => {
+        if (!grouped[item.date]) grouped[item.date] = [];
+        grouped[item.date].push(item.text);
+      });
+
+      for (let date in grouped) {
+        let block = document.createElement("div");
+        block.innerHTML = `<div class="date-title">${date}</div>`;
+        grouped[date].forEach(msg => {
+          block.innerHTML += `<div class="message">${msg}</div>`;
+        });
+        resultsDiv.appendChild(block);
+      }
+    } catch (err) {
+      resultsDiv.innerHTML = "<p>⚠️ 데이터를 불러오는 데 실패했습니다.</p>";
+      console.error(err);
+    }
+  }
+  </script>
+</body>
+</html>
+
