@@ -225,7 +225,7 @@
         let block = document.createElement("div");
         block.innerHTML = `<div class="date-title">${date}</div>`;
         grouped[date].forEach(msg => {
-          block.innerHTML += `<div class="message">${msg}</div>`;
+         block.innerHTML += `<a href="${date}.html" class="message">${msg}</a>`;
         });
         resultsDiv.appendChild(block);
       }
