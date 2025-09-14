@@ -194,10 +194,21 @@
     let resultsDiv = document.getElementById("results");
     resultsDiv.innerHTML = "";
 
-    if (/^\d{6}$/.test(input)) {
-      window.location.href = input + ".html";
-      return;
+    // 날짜 검색 (파일 존재 여부 확인)
+  if (/^\d{6}$/.test(input)) {
+    let file = input + ".html";
+    try {
+      let res = await fetch(file, { method: "HEAD" });
+      if (res.ok) {
+        window.location.href = file;
+      } else {
+        resultsDiv.innerHTML = "<p>검색 결과가 없습니다.</p>";
+      }
+    } catch (err) {
+      resultsDiv.innerHTML = "<p>검색 결과가 없습니다.</p>";
     }
+    return;
+  }
 
     if (input === "") {
       resultsDiv.innerHTML = "<p>검색어를 입력하세요.</p>";
